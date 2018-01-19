@@ -6,72 +6,54 @@
 #include <ros.h>
 #include <std_msgs/Empty.h>
 #include<geometry_msgs/Twist.h>
+#include <math.h>
 
 
 ros::NodeHandle  nh;
 
 
 void messageCb( const geometry_msgs::Twist& msg){
-  if(msg.linear.x>0.5)
+  if(msg.linear.x>0&&msg.angular.z==0)
   {
-    
-  
             digitalWrite(3,LOW); //forward
-            digitalWrite(2,HIGH);
             digitalWrite(7,LOW);
-            digitalWrite(6,HIGH);
-  }
-  else
-  {         digitalWrite(3,LOW); //stop
-            digitalWrite(2,LOW);
-            digitalWrite(7,LOW);
-            digitalWrite(6,LOW);
-    
-  }
-}
-/*
-void messageCb1( const geometry_msgs::Twist& msg){
+            analogWrite(2,((int)msg.linear.x < 255) ? (int)msg.linear.x : 255);
+            analogWrite(6,((int)msg.linear.x < 255) ? (int)msg.linear.x : 255);
 
-    if(msg.linear.y>0.5)
-  {
-    
-  
-             digitalWrite(3,HIGH);//reverse
-              digitalWrite(2,LOW);
-              digitalWrite(7,HIGH);
-              digitalWrite(6,LOW); 
-  }
-  else
-  {         digitalWrite(3,LOW); //stop
-            digitalWrite(2,LOW);
-            digitalWrite(7,LOW);
-            digitalWrite(6,LOW);
-    
-  }
-             
 }
-*/
-void messageCb2( const std_msgs::Empty& toggle_msg){
+else  if(msg.linear.x<0&&msg.angular.z==0)
+{
+ 
+            digitalWrite(2,LOW); //reverse
+            digitalWrite(6,LOW);
+            analogWrite(3,(-(int)msg.linear.x < 255) ? -(int)msg.linear.x : 255);
+            analogWrite(7,(-(int)msg.linear.x < 255) ? -(int)msg.linear.x : 255);
   
-              digitalWrite(3,HIGH); //right
-               digitalWrite(2,LOW);
-               digitalWrite(7,LOW);
-                digitalWrite(6,HIGH);
+}
+else if(msg.linear.x==0 &&msg.angular.z>1.0)
+{
+ digitalWrite(3,LOW);
+ analogWrite(2,((int)msg.angular.z < 255) ? (int)msg.angular.z : 255);
+ 
+}
+else if(msg.linear.x==0 &&msg.angular.z<-1.0)
+{
+ digitalWrite(7,LOW);
+ analogWrite(6,(-(int)msg.angular.z < 255) ? -(int)msg.angular.z : 255);
+ 
+}
+else
+{
+  digitalWrite(7,LOW);
+  digitalWrite(6,LOW);
+  digitalWrite(3,LOW);
+  digitalWrite(2,LOW);
+}
 }
 
-void messageCb3( const std_msgs::Empty& toggle_msg){
-             digitalWrite(3,LOW); //left
-             digitalWrite(2,HIGH);
-             digitalWrite(7,HIGH);
-             digitalWrite(6,LOW);
-  
-              
-}
 
 ros::Subscriber<geometry_msgs::Twist> sub("cmd_vel", &messageCb );
-//ros::Subscriber<geometry_msgs::Twist> sub1("cmd_vel", &messageCb1 );
-//ros::Subscriber<std_msgs::Empty> sub2("d", &messageCb2 );
-//ros::Subscriber<std_msgs::Empty> sub3("a", &messageCb3 );
+
 
 void setup() {
   pinMode(7,OUTPUT);
@@ -82,20 +64,17 @@ void setup() {
   pinMode(2,OUTPUT);
   pinMode(25,OUTPUT);
 
-  Serial1.begin(38400);
-  Serial.begin(38400);
-   nh.initNode();
+ 
+  nh.initNode();
   nh.subscribe(sub);
-  nh.subscribe(sub1);
- // nh.subscribe(sub2);
- // nh.subscribe(sub3);
+
 }
 
 void loop() {
   digitalWrite(24,HIGH);
   digitalWrite(25,HIGH);
    nh.spinOnce();
-   delay(1000);
+   delay(10);
 
 
   
