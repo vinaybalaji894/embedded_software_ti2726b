@@ -2,7 +2,9 @@
 #include <std_msgs/Empty.h>
 
 
-ros::NodeHandle  nh;
+
+
+ros::NodeHandle nh;
 
 
 void messageCb( const std_msgs::Empty& toggle_msg){
@@ -50,7 +52,7 @@ void setup() {
 
   Serial1.begin(38400);
   Serial.begin(38400);
-   nh.initNode();
+   //nh.initNode();
   nh.subscribe(sub);
   nh.subscribe(sub1);
   nh.subscribe(sub2);
