@@ -1,12 +1,9 @@
+//#define USE_USBCON
 #include <ros.h>
 #include <geometry_msgs/Twist.h>
 #include <ArduinoHardware.h>
 
 //INCLUDING BLUETOOTH IN THE ARDUINO SKETCH
-
-//#include <ros.h>
-//#include <Arduino.h>
-//#include <std_msgs/Empty.h>
 
 
 
@@ -16,7 +13,7 @@ class NewHardware : public ArduinoHardware
    NewHardware():ArduinoHardware(&Serial1,57600){};
 };
 
-ros::NodeHandle_<NewHardware> nh;
+ros::NodeHandle_<NewHardware>nh;
 
 
 
@@ -27,9 +24,9 @@ void messageCb( const geometry_msgs::Twist& msg){
   if(msg.linear.x>0.5)
   {
     
-             //digitalWrite(LED_BUILTIN,HIGH);
-            digitalWrite(3,LOW); //forward
-            digitalWrite(2,HIGH);
+             digitalWrite(LED_BUILTIN,HIGH);
+            //digitalWrite(3,LOW); //forward
+            //digitalWrite(2,HIGH);
             //digitalWrite(7,LOW);
             //digitalWrite(6,HIGH);
   }
@@ -96,7 +93,7 @@ void setup() {
   pinMode(LED_BUILTIN,OUTPUT);
   //Serial1.begin(57600);
   //Serial.begin(38400);
-  nh.getHardware()->setBaud(115200);
+  nh.getHardware()->setBaud(57600);
    nh.initNode();
   nh.subscribe(sub);
  // nh.subscribe(sub1);
